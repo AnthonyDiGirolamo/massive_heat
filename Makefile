@@ -1,14 +1,19 @@
 #!/usr/bin/make
-CC = mpicc
+CC = gcc
 CFLAGS=-g -Wall
 LDFLAGS=
 
-all: main mkinit
-mkinit: mkinit.c
-		gcc $(CFLAGS) $? $(LDFLAGS) -o $@
+all: massive_heat_tests.exe
+
+massive_heat_tests.exe: tests.c libeuler.a
+	$(CC) $(CFLAGS) -I. -L. -o massive_heat_tests.exe tests.c -leuler
+	./massive_heat_tests.exe
+
+libeuler.a: euler.c euler.h
+	$(CC) $(CFLAGS) -c euler.c
+	ar rs libeuler.a euler.o
+
 clean:
-		rm -f main mkinit *.o
-profile: main.c
-		mpecc -mpilog $(CFLAGS) $? $(LDFLAGS) -o main
-view_profile:
-		clog2TOslog2 main.clog2 && jumpshot main.slog2
+	rm -f *.exe
+	rm -f *.o
+	rm -f *.a
