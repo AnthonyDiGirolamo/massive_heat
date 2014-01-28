@@ -3,7 +3,11 @@ CC = gcc
 CFLAGS=-g -Wall
 LDFLAGS=
 
-all: massive_heat_tests.exe
+all: massive_heat.exe
+
+massive_heat.exe: main.c libeuler.a
+	$(CC) $(CFLAGS) -I. -L. -o massive_heat.exe main.c -leuler
+	./massive_heat.exe
 
 massive_heat_tests.exe: tests.c libeuler.a
 	$(CC) $(CFLAGS) -I. -L. -o massive_heat_tests.exe tests.c -leuler
