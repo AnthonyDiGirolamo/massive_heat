@@ -45,12 +45,24 @@ void print_test_name(TestCase* tc) {
 
 static int num_failures = 0;
 char* test_executable_path;
+// ANSI Color stuff stolen gleefully from http://stackoverflow.com/questions/3219393/stdlib-and-colored-output-in-c
+// Many thanks to Andrejs Cainikovs (http://stackoverflow.com/users/147407/andrejs-cainikovs)
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_RESET   "\x1b[0m"
 void run_test(TestCase* tc) {
 	char test_command[256];
-	printf("\t%s\n",tc->name);
+	int test_status;
+	printf("\t%s ",tc->name);
 
 	sprintf(test_command, "%s \"%s\"", test_executable_path, tc->name);
-	if(system(test_command) != 0) num_failures++;
+	test_status = system(test_command);
+	if(test_status != 0) {
+		num_failures++;
+		printf(ANSI_COLOR_RED "Fail" ANSI_COLOR_RESET "\n");
+	} else {
+		printf(ANSI_COLOR_GREEN "Pass" ANSI_COLOR_RESET "\n");
+	}
 }
 
 #define iterate_suite(ts, method)\
@@ -96,7 +108,7 @@ void run_test(TestCase* tc) {
 			return 1;\
 		}\
 		if(test_passed == NOPE) {\
-			printf("%s\n", exit_msg);\
+			printf("\t\t%s\n", exit_msg);\
 			return 1;\
 		}\
 		return 0;\
