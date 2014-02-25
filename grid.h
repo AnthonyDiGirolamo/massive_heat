@@ -8,4 +8,6 @@ typedef struct Grid {
 	int numstepsX;
 	int numstepsT;
 } Grid;
+void print_grid(Grid grid);
+Grid create_grid(int numstepsX, int numstepsT, double finalT);
 #endif
