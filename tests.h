@@ -43,6 +43,16 @@ void print_test_name(TestCase* tc) {
 	printf("We have a test named '%s'\n", tc->name);
 }
 
+static int num_failures = 0;
+char* test_executable_path;
+void run_test(TestCase* tc) {
+	char test_command[256];
+	printf("\t%s\n",tc->name);
+
+	sprintf(test_command, "%s \"%s\"", test_executable_path, tc->name);
+	if(system(test_command) != 0) num_failures++;
+}
+
 #define iterate_suite(ts, method)\
 	do {\
 		TestCase* tc = ts->first;\
@@ -69,14 +79,17 @@ void print_test_name(TestCase* tc) {
 		if (argc < 2) {\
 			printf("%s\n", description);\
 			ts = create_test_suite(description);\
+			test_executable_path = (char*)malloc(strlen(argv[0]) * sizeof(char));\
+			strcpy(test_executable_path,argv[0]);\
 			driver = YUP;\
 		}\
 		char* exit_msg = "No Message Set";\
 		if (NOPE == YUP) {}\
 		tests\
 		if(driver == YUP) {\
-			iterate_suite(ts,print_test_name)\
-			return 0;\
+			iterate_suite(ts,run_test);\
+			printf("%d tests failed.\n",num_failures);\
+			return (num_failures > 0) ? 0 : 1;\
 		}\
 		if(test_exists == NOPE) {\
 			printf("No test named '%s' exists\n", TEST_NAME);\
